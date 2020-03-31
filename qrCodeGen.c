@@ -100,5 +100,8 @@ int main(int argc, char *argv[])
 	clearScreen();
 	char *hashedStr = hash(url);
 	int qrGridSize = (strlen(hashedStr) == 24) ? 18 : 36;
+	/*
+	This space is kept for the QR generation using the hashed string.
+	*/
 	return 0;
 }
