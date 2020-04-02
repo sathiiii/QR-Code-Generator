@@ -1,8 +1,13 @@
+/* 	Copyright (C) 2020 Sathira Silva
+	Programming Methodology (CO222) - Project01 
+
+	This program generates a QR Code for a given string (URL). */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
+/* The possibilities for the text foreground color */
 #define BLACK 	0
 #define RED 	1
 #define GREEN 	2
@@ -12,8 +17,24 @@
 #define CYAN 	6
 #define WHITE 	7
 
+/* The possibilities of displaying help */
 #define BASIC	0
 #define FULL	1
+
+int indexOf(char *string, char **array);
+int contains(char *string, char **array);
+void strip(char arr[], int length);
+void reverse(char arr[], int start, int end);
+void clearScreen();
+void changeTextColor(int foregroundColor);
+void resetColor();
+void printBlock(int foregroundColor);
+char *hash(char str[]);
+void applyPadding(int grid[38][38], int gridSize);
+void maskPositionIndicators(int grid[38][38], int gridSize);
+void fillHashData(char *hashedStr, int grid[38][38], int gridSize);
+void printHelp(char *programName, int type);
+
 
 char *colors[7] = {"black", "red", "green", "yellow", "blue", "magenta", "cyan"};
 
@@ -28,32 +49,20 @@ const int BIG[12][12] = {{-1,   -1, 100, 101, 102, 103, 104, 105, 106, 107, -1, 
 						 {-1,   -1, 108, 109, 110, 111, 112, 113, 114, 115, -1, -1},
 						 {116, 117,   0,   1,   2,   3,   4,   5,   6,   7,  8,  9},
 						 {118, 119,  10,  11,  12,  13,  14,  15,  16,  17, 18, 19},
-						 {120, 121,  20,  21,  22,  23,   1,   1,   1,   1,  1,  2},
-						 {122, 123,   2,   2,   2,   2,   2,   2,   2,   2,  2,  3},
-						 {124, 125,   3,   3,   3,   3,   3,   3,   3,   3,  3,  4},
-						 {126, 127,   4,   4,   4,   4,   4,   4,   4,   4,  4,  5},
-						 {128, 129,   5,   5,   5,   5,   5,   5,   5,   5,  5,  6},
-						 {130, 131,   6,   6,   6,   6,   6,   6,   6,   6,  6,  7},
-						 { -1,  -1,   7,   7,   7,   7,   7,   7,   7,   7,  7,  8},
-						 { -1,  -1,   8,   8,   8,   8,  10,   8,   8,   8,  8, 99}};
-
-int stringCompare(char *str1, char *str2)
-{
-	int len1 = strlen(str1);
-	int len2 = strlen(str2);
-	if (len1 != len2)
-		return 0;
-	for (int i = 0; i < len1; i++)
-		if (str1[i] != str2[i])
-			return 0;
-	return 1;
-}
+						 {120, 121,  20,  21,  22,  23,  24,  25,  26,  27, 28, 29},
+						 {122, 123,  30,  31,  32,  33,  34,  35,  36,  37, 38, 39},
+						 {124, 125,  40,  41,  42,  43,  44,  45,  46,  47, 48, 49},
+						 {126, 127,  50,  51,  52,  53,  54,  55,  56,  57, 58, 59},
+						 {128, 129,  60,  61,  62,  63,  64,  65,  66,  67, 68, 69},
+						 {130, 131,  70,  71,  72,  73,  74,  75,  76,  77, 78, 79},
+						 { -1,  -1,  80,  81,  82,  83,  84,  85,  86,  87, 88, 89},
+						 { -1,  -1,  90,  91,  92,  93,  94,  95,  96,  97, 98, 99}};
 
 int indexOf(char *string, char **array)
 {
 	for (int i = 0; i < 7; i++)
 	{
-		if (stringCompare(array[i], string))
+		if (!strcmp(array[i], string))
 		{
 			return i;
 		}
@@ -216,7 +225,21 @@ void fillHashData(char *hashedStr, int grid[38][38], int gridSize)
 
 void printHelp(char *programName, int type)
 {
-	printf("Blah blah blah\n");
+	if (type == BASIC || type == FULL)
+	{
+		printf("Usage:\n");
+		printf("  %s\n", programName);
+		printf("  %s -c [black | red | green | yellow | blue | magenta | cyan]\n", programName);
+		printf("  %s -h\n", programName);
+	}
+	if (type == FULL)
+	{
+		printf("\nOptions:\n");
+		printf("  -c\tSpecify the foreground color for the QR.\n");
+		printf("  -h\tShow this help screen.\n");
+		printf("\nInput:\n");
+		printf("  The length of the URL must be atleast 5 characters.\n\n");
+	}
 }
 
 int main(int argc, char *argv[])
@@ -224,18 +247,18 @@ int main(int argc, char *argv[])
 	int foregroundColor = BLACK;
 	if (argc == 2)
 	{
-		if (stringCompare(argv[1], "-h"))
+		if (!strcmp(argv[1], "-h"))
 		{
 			printf("\n");
 			printHelp(argv[0], FULL);
 			return 0;
 		}
-		else if (stringCompare(argv[1], "-c"))
+		else if (!strcmp(argv[1], "-c"))
 		{
 			changeTextColor(RED);
 			printf("Missing 1 argument:\n");
 			resetColor();
-			printf("\tColor must be specified just after the -c flag.\n\n");
+			printf("  Color must be specified just after the -c flag.\n\n");
 			printHelp(argv[0], BASIC);
 			return 0;
 		}
@@ -244,23 +267,23 @@ int main(int argc, char *argv[])
 			changeTextColor(RED);
 			printf("Incorrect usage of arguments:\n");
 			resetColor();
-			printf("\tView help for more details.\n\n");
+			printf("  View help for more details.\n\n");
 			printHelp(argv[0], BASIC);
 			return 0;
 		}
 	}
 	else if (argc == 3)
 	{
-		if (stringCompare(argv[1], "-c") && contains(argv[2], colors))
+		if (!strcmp(argv[1], "-c") && contains(argv[2], colors))
 		{
 			foregroundColor = indexOf(argv[2], colors);
 		}
-		else if (stringCompare(argv[1], "-c") && !contains(argv[2], colors))
+		else if (!strcmp(argv[1], "-c") && !contains(argv[2], colors))
 		{
 			changeTextColor(RED);
 			printf("Color undefined:\n");
 			resetColor();
-			printf("\tView help for more details.\n\n");
+			printf("  View help for more details.\n\n");
 			printHelp(argv[0], BASIC);
 			return 0;
 		}
@@ -269,7 +292,7 @@ int main(int argc, char *argv[])
 			changeTextColor(RED);
 			printf("Incorrect usage of arguments:\n");
 			resetColor();
-			printf("\tView help for more details.\n\n");
+			printf("  View help for more details.\n\n");
 			printHelp(argv[0], BASIC);
 			return 0;
 		}
@@ -286,6 +309,14 @@ int main(int argc, char *argv[])
 	clearScreen();
 	printf("Enter the URL: ");
 	scanf("%s", url);
+	if (strlen(url) < 5)
+	{
+		changeTextColor(RED);
+		printf("URL too short:\n");
+		resetColor();
+		printf("  The minimum length of the URL is 5 characters.\n");
+		return 0;
+	}
 	clearScreen();
 	char *hashedStr = hash(url);
 	int qrGridSize = (strlen(hashedStr) == 24) ? 20 : 38;
