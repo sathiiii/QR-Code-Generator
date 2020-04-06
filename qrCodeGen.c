@@ -17,7 +17,7 @@
 #define CYAN 	6
 #define WHITE 	7
 
-/* The possibilities of displaying help */
+/* The options for displaying help */
 #define BASIC	0
 #define FULL	1
 
