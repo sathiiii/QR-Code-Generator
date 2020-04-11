@@ -314,7 +314,7 @@ int main(int argc, char *argv[])
 		changeTextColor(RED);
 		printf("URL too short:\n");
 		resetColor();
-		printf("  The minimum length of the URL must be 5 characters.\n");
+		printf("  The length of the URL must be atleast 5 characters.\n");
 		return 0;
 	}
 	else if (strlen(url) > 120)
