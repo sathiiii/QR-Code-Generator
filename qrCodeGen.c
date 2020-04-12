@@ -29,23 +29,23 @@ void clearScreen();
 void changeTextColor(int foregroundColor);
 void resetColor();
 void printBlock(int foregroundColor);
-char *hash(char str[]);
+unsigned char *hash(char str[]);
 void applyPadding(int grid[38][38], int gridSize);
 void maskPositionIndicators(int grid[38][38], int gridSize);
-void fillHashData(char *hashedStr, int grid[38][38], int gridSize);
+void fillHashData(unsigned char *hashedStr, int grid[38][38], int gridSize);
 void printHelp(char *programName, int type);
 
 
 char *colors[7] = {"black", "red", "green", "yellow", "blue", "magenta", "cyan"};
 
-const int SMALL[6][6] = {			 {-1, -1, 16, 17, -1, -1},
+const int SMALL[6][6] = {{-1, -1, 16, 17, -1, -1},
 						 {-1, -1, 18, 19, -1, -1},
 						 {20, 21,  0,  1,  2,  3},
 						 {22, 23,  4,  5,  6,  7},
 						 {-1, -1,  8,  9, 10, 11},
 						 {-1, -1, 12, 13, 14, 15}};
 
-const int BIG[12][12] = {			 {-1,   -1, 100, 101, 102, 103, 104, 105, 106, 107, -1, -1},
+const int BIG[12][12] = {{-1,   -1, 100, 101, 102, 103, 104, 105, 106, 107, -1, -1},
 						 {-1,   -1, 108, 109, 110, 111, 112, 113, 114, 115, -1, -1},
 						 {116, 117,   0,   1,   2,   3,   4,   5,   6,   7,  8,  9},
 						 {118, 119,  10,  11,  12,  13,  14,  15,  16,  17, 18, 19},
@@ -118,11 +118,11 @@ void printBlock(int foregroundColor)
 	printf("%c[%d;%dm%*c%c[0m", 0x1B, 30, 40 + foregroundColor, 2, ' ', 0x1B);
 }
 
-char *hash(char str[])
+unsigned char *hash(char str[])
 {
 	int n = strlen(str);
 	int hashLength = (n <= 20) ? 24 : 132;
-	char *hashed = (char *)calloc(hashLength, sizeof(char));
+	unsigned char *hashed = (unsigned char *)calloc(hashLength, sizeof(unsigned char));
 	hashed[0] = n + 50;
 	for (int i = 1; i < hashLength; i++)
 	{
@@ -179,7 +179,7 @@ void maskPositionIndicators(int grid[38][38], int gridSize)
 	
 }
 
-void fillHashData(char *hashedStr, int grid[38][38], int gridSize)
+void fillHashData(unsigned char *hashedStr, int grid[38][38], int gridSize)
 {
 	if (gridSize == 20)
 	{
@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	clearScreen();
-	char *hashedStr = hash(url);
+	unsigned char *hashedStr = hash(url);
 	int qrGridSize = (strlen(hashedStr) == 24) ? 20 : 38;
 	int grid[38][38] = {{-1}};
 	applyPadding(grid, qrGridSize);
